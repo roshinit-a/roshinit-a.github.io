@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roshan Raj Prasad | ML Engineer</title>
+    <meta name="description" content="Portfolio of Roshan Raj Prasad, a Machine Learning Engineer specializing in robust AI solutions.">
+
+    <!-- Material Symbols -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    
+    <!-- Three.js CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            400: '#4ade80',
+                            500: '#22c55e', // Primary Green
+                            600: '#16a34a',
+                            900: '#14532d',
+                        },
+                        dark: {
+                            bg: '#0f172a',      // Slate 900
+                            card: '#1e293b',    // Slate 800
+                            border: '#334155',  // Slate 700
+                        }
+                    },
+                    animation: {
+                        'cursor': 'cursor .75s step-end infinite',
+                    },
+                    keyframes: {
+                        cursor: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap');
+
+        /* Custom Variables */
+        :root {
+            --bg-color: #ffffff;
+            --text-color: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.7);
+            --border-color: rgba(226, 232, 240, 0.8);
+            --nav-glass: rgba(255, 255, 255, 0.8);
+        }
+
+        .dark {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --border-color: rgba(51, 65, 85, 0.8);
+            --nav-glass: rgba(15, 23, 42, 0.8);
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.4s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* Glassmorphism Utilities */
+        .glass {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+        }
+        
+        .nav-glass {
+            background: var(--nav-glass);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Scroll Progress Bar */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(to right, #22c55e, #3b82f6);
+            z-index: 100;
+            width: 0%;
+            transition: width 0.1s;
+        }
+
+        /* Active Nav Link */
+        .nav-link.active {
+            color: #22c55e;
+            font-weight: 600;
+        }
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 0;
+            background-color: #22c55e;
+            transition: width 0.3s;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Reveal Animations */
+        .reveal-up {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+        }
+        .reveal-up.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stagger Delays */
+        .delay-100 { transition-delay: 0.1s; }
+        .delay-200 { transition-delay: 0.2s; }
+        .delay-300 { transition-delay: 0.3s; }
+        
+        /* Typing Cursor */
+        .typing-cursor {
+            display: inline-block;
+            width: 3px;
+            background-color: #22c55e;
+            animation: cursor 0.75s step-end infinite;
+        }
+
+        /* Timeline Specific */
+        .timeline-line {
+            position: absolute;
+            left: 2rem; /* Mobile Position */
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, transparent, var(--border-color) 10%, var(--border-color) 90%, transparent);
+        }
+        @media (min-width: 768px) {
+            .timeline-line {
+                left: 50%;
+                transform: translateX(-50%);
+            }
+        }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <!-- Three.js Canvas Container -->
+    <div id="canvas-container" class="fixed inset-0 z-[-1] pointer-events-none opacity-60 dark:opacity-40"></div>
+
+    <!-- Scroll Progress -->
+    <div id="scroll-progress"></div>
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full z-50 nav-glass transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                <!-- Logo -->
+                <div class="flex-shrink-0 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <span class="text-2xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-blue-500">
+                        Roshan<span class="text-slate-500 dark:text-slate-400"> Raj</span>
+                    </span>
+                </div>
+                
+                <!-- Desktop Menu -->
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-center space-x-8">
+                        <a href="#about" class="nav-link text-sm font-medium hover:text-brand-500 transition-colors">About</a>
+                        <a href="#experience" class="nav-link text-sm font-medium hover:text-brand-500 transition-colors">Experience</a>
+                        <a href="#skills" class="nav-link text-sm font-medium hover:text-brand-500 transition-colors">Skills</a>
+                        <a href="#projects" class="nav-link text-sm font-medium hover:text-brand-500 transition-colors">Projects</a>
+                        <a href="#contact" class="nav-link text-sm font-medium hover:text-brand-500 transition-colors">Contact</a>
+                        
+                        <!-- Theme Toggle -->
+                        <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-200/50 dark:hover:bg-gray-700/50 transition-colors focus:outline-none ring-1 ring-transparent focus:ring-brand-500">
+                            <span id="sun-icon" class="material-symbols-rounded text-xl block text-amber-500">light_mode</span>
+                            <span id="moon-icon" class="material-symbols-rounded text-xl hidden text-blue-400">dark_mode</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <div class="-mr-2 flex md:hidden">
+                    <button id="mobile-menu-btn" type="button" class="inline-flex items-center justify-center p-2 rounded-md text-gray-500 hover:text-brand-500 focus:outline-none">
+                        <span class="material-symbols-rounded text-3xl">menu</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Menu -->
+        <div class="md:hidden hidden absolute w-full glass border-b border-theme shadow-lg" id="mobile-menu">
+            <div class="px-4 pt-2 pb-6 space-y-2">
+                <a href="#about" class="block px-3 py-3 rounded-md text-base font-medium hover:bg-brand-500/10 hover:text-brand-500 transition">About</a>
+                <a href="#experience" class="block px-3 py-3 rounded-md text-base font-medium hover:bg-brand-500/10 hover:text-brand-500 transition">Experience</a>
+                <a href="#skills" class="block px-3 py-3 rounded-md text-base font-medium hover:bg-brand-500/10 hover:text-brand-500 transition">Skills</a>
+                <a href="#projects" class="block px-3 py-3 rounded-md text-base font-medium hover:bg-brand-500/10 hover:text-brand-500 transition">Projects</a>
+                <a href="#contact" class="block px-3 py-3 rounded-md text-base font-medium hover:bg-brand-500/10 hover:text-brand-500 transition">Contact</a>
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <button id="mobile-theme-toggle" class="flex items-center w-full px-3 py-2 text-base font-medium hover:text-brand-500">
+                        <span class="material-symbols-rounded mr-2">brightness_4</span> Toggle Theme
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="relative pt-20">
+
+        <!-- 1. Hero Section -->
+        <section id="hero" class="min-h-[90vh] flex items-center justify-center relative overflow-hidden px-4">
+            <div class="max-w-7xl w-full mx-auto grid lg:grid-cols-2 gap-12 items-center">
+                
+                <!-- Text Content -->
+                <div class="text-center lg:text-left order-2 lg:order-1 reveal-up active">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-600 dark:text-brand-400 text-xs font-bold uppercase tracking-wider mb-6">
+                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                        Available for hire
+                    </div>
+                    
+                    <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight mb-6 leading-[1.1]">
+                        Hi, I'm Roshan.<br>
+                        <span class="bg-clip-text text-transparent bg-gradient-to-r from-brand-500 to-blue-600" id="typewriter"></span><span class="typing-cursor">&nbsp;</span>
+                    </h1>
+                    
+                    <p class="text-lg sm:text-xl opacity-80 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-8">
+                        I bridge the gap between complex data and actionable insights. Expert in deploying scalable 
+                        <span class="font-semibold text-brand-600 dark:text-brand-400">Machine Learning models</span> 
+                        for real-world impact.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <a href="#projects" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white bg-brand-600 hover:bg-brand-700 rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:-translate-y-1">
+                            Explore Projects
+                            <span class="material-symbols-rounded ml-2">arrow_downward</span>
+                        </a>
+                        <!-- Updated Download CV Link -->
+                        <!-- change the below link to download the desirable pdf -->
+                        <a href="https://github.com/roshinit-a/roshinit-a.github.io/raw/19d8ff4295dfd582479c6b1d755463e1522639bd/resume.pdf" target="_blank" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-xl glass hover:bg-gray-100/50 dark:hover:bg-gray-800/50 transition-all transform hover:-translate-y-1">
+                            Download CV
+                            <span class="material-symbols-rounded ml-2">download</span>
+                        </a>
+                    </div>
+                    
+                    <!-- Social Proof -->
+                    <div class="mt-10 flex items-center justify-center lg:justify-start gap-6 opacity-70">
+                        <!-- GitHub -->
+                        <a href="https://github.com/roshinit-a" target="_blank" class="hover:text-brand-500 transition-colors transform hover:scale-110" title="GitHub">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                        </a>
+                        <!-- LeetCode -->
+                        <a href="https://leetcode.com/u/NovaCipher11/" target="_blank" class="hover:text-brand-500 transition-colors transform hover:scale-110" title="LeetCode">
+                            <span class="material-symbols-rounded text-2xl">code</span>
+                        </a>
+                        <!-- LinkedIn -->
+                        <a href="https://www.linkedin.com/in/roshan-raj-prasad-2171432a3/" target="_blank" class="hover:text-brand-500 transition-colors transform hover:scale-110" title="LinkedIn">
+                            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.5-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Profile Visual -->
+                <div class="relative flex justify-center lg:justify-end order-1 lg:order-2 reveal-up delay-200">
+                    <div class="relative w-72 h-72 sm:w-96 sm:h-96 group">
+                        <!-- Animated Rings -->
+                        <div class="absolute inset-0 rounded-full border border-brand-500/20 animate-[spin_10s_linear_infinite] scale-110"></div>
+                        <div class="absolute inset-0 rounded-full border border-dashed border-blue-500/20 animate-[spin_15s_linear_infinite_reverse] scale-125"></div>
+                        
+                        <!-- Main Image -->
+                        <div class="relative w-full h-full rounded-full overflow-hidden border-4 border-white/10 shadow-2xl transition duration-500 group-hover:scale-[1.02]">
+                            <img src="https://github.com/roshinit-a/roshinit-a.github.io/blob/main/portfolio%20Image.webp?raw=true" 
+                                 alt="Roshan Raj Prasad"
+                                 class="w-full h-full object-cover">
+                        </div>
+                        
+                        <!-- Floating Badge -->
+                        <div class="absolute -bottom-4 right-10 glass px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 animate-bounce" style="animation-duration: 3s;">
+                            <span class="text-3xl">🚀</span>
+                            <div>
+                                <p class="text-xs font-bold uppercase text-gray-500 dark:text-gray-400">Current Focus</p>
+                                <p class="text-sm font-bold">Deep Learning</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. About & Stats Section -->
+        <section id="about" class="py-16 md:py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-12 gap-12 items-start">
+                    
+                    <!-- Bio -->
+                    <div class="md:col-span-7 reveal-up">
+                        <h2 class="text-3xl font-bold mb-6 flex items-center gap-3">
+                            <span class="w-10 h-1 bg-brand-500 rounded-full"></span>
+                            About Me
+                        </h2>
+                        <div class="glass p-8 rounded-3xl space-y-4 text-lg leading-relaxed text-gray-700 dark:text-gray-300">
+                            <p>
+                                I am an <strong class="text-brand-600 dark:text-brand-400">ML Engineer</strong> passionate about unearthing patterns in chaotic data. Unlike traditional development, I enjoy the uncertainty and discovery process inherent in AI.
+                            </p>
+                            <p>
+                                My journey started with simple linear regression and has evolved into building complex Neural Networks and optimizing pipelines for production. I believe in writing clean, maintainable code—even in Jupyter Notebooks.
+                            </p>
+                            <div class="pt-4 flex flex-wrap gap-3">
+                                <span class="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-sm font-mono border border-gray-200 dark:border-gray-700">📍 India</span>
+                                <span class="px-3 py-1 rounded-md bg-gray-100 dark:bg-gray-800 text-sm font-mono border border-gray-200 dark:border-gray-700">🗣️ English, Hindi</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="md:col-span-5 grid grid-cols-2 gap-4 reveal-up delay-200">
+                        <div class="glass p-6 rounded-2xl text-center hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors group">
+                            <span class="material-symbols-rounded text-4xl text-brand-500 mb-2 group-hover:scale-110 transition-transform">code_blocks</span>
+                            <h3 class="text-3xl font-bold">2+</h3>
+                            <p class="text-sm opacity-60">Years Experience</p>
+                        </div>
+                        <div class="glass p-6 rounded-2xl text-center hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors group">
+                            <span class="material-symbols-rounded text-4xl text-blue-500 mb-2 group-hover:scale-110 transition-transform">rocket_launch</span>
+                            <h3 class="text-3xl font-bold">10+</h3>
+                            <p class="text-sm opacity-60">Projects Deployed</p>
+                        </div>
+                        <div class="glass p-6 rounded-2xl text-center hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-colors group">
+                            <span class="material-symbols-rounded text-4xl text-purple-500 mb-2 group-hover:scale-110 transition-transform">bug_report</span>
+                            <h3 class="text-3xl font-bold">99%</h3>
+                            <p class="text-sm opacity-60">Bug Free Code</p>
+                        </div>
+                        <div class="glass p-6 rounded-2xl text-center hover:bg-amber-50 dark:hover:bg-amber-900/20 transition-colors group">
+                            <span class="material-symbols-rounded text-4xl text-amber-500 mb-2 group-hover:scale-110 transition-transform">coffee</span>
+                            <h3 class="text-3xl font-bold">∞</h3>
+                            <p class="text-sm opacity-60">Coffees Consumed</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Experience Section -->
+        <section id="experience" class="py-16 md:py-24 relative">
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 reveal-up">
+                    <span class="text-brand-500 font-bold uppercase tracking-widest text-sm">My Journey</span>
+                    <h2 class="text-4xl font-extrabold mt-2">Professional Timeline</h2>
+                </div>
+
+                <div class="relative">
+                    <!-- Vertical Line -->
+                    <div class="timeline-line"></div>
+
+                    <div class="space-y-12">
+                        <!-- Item: Education (Moved to Right Side for better balance) -->
+                        <div class="relative flex flex-col md:flex-row gap-8 items-start reveal-up">
+                            <!-- Spacer for Left Side -->
+                            <div class="hidden md:block md:w-1/2"></div>
+                            
+                            <!-- Icon -->
+                            <div class="absolute left-8 md:left-1/2 transform -translate-x-1/2 flex items-center justify-center w-12 h-12 rounded-full bg-white dark:bg-slate-800 border-4 border-gray-300 dark:border-gray-600 shadow-xl z-10">
+                                <span class="material-symbols-rounded text-gray-500">school</span>
+                            </div>
+
+                            <!-- Content: Right Side -->
+                            <div class="w-full md:w-1/2 pl-20 md:pl-12 text-left">
+                                <span class="inline-block px-3 py-1 rounded-full bg-brand-100 text-brand-700 dark:bg-brand-900/40 dark:text-brand-300 text-sm font-bold mb-2">2023 - 2027</span>
+                                <h3 class="text-2xl font-bold">B.Tech in Computer Science</h3>
+                                <p class="text-lg text-brand-600 dark:text-brand-400 font-medium">Government Engineering College, Palamu</p>
+                                <p class="mt-3 opacity-70 text-sm leading-relaxed">
+                                    Specialized in Artificial Intelligence and Data Mining. Capstone project focused on Deep Fake detection.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Skills Section -->
+        <section id="skills" class="py-16 md:py-24">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-16 reveal-up">
+                    <span class="text-brand-500 font-bold uppercase tracking-widest text-sm">Expertise</span>
+                    <h2 class="text-4xl font-extrabold mt-2">Technical Arsenal</h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Skill 1 -->
+                    <div class="glass p-8 rounded-3xl hover:border-brand-500/50 transition-all duration-300 group hover:-translate-y-2 reveal-up">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-400 to-brand-600 flex items-center justify-center text-white mb-6 shadow-lg shadow-brand-500/30 group-hover:rotate-6 transition-transform">
+                            <span class="material-symbols-rounded text-3xl">psychology</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Machine Learning</h3>
+                        <p class="text-sm opacity-70 mb-4 leading-relaxed">Building predictive models with Scikit-learn, XGBoost, and random forests.</p>
+                        <ul class="text-sm space-y-1 font-mono text-gray-500 dark:text-gray-400">
+                            <li>• Regression</li>
+                            <li>• Classification</li>
+                            <li>• Clustering</li>
+                        </ul>
+                    </div>
+
+                    <!-- Skill 2 -->
+                    <div class="glass p-8 rounded-3xl hover:border-blue-500/50 transition-all duration-300 group hover:-translate-y-2 reveal-up delay-100">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white mb-6 shadow-lg shadow-blue-500/30 group-hover:rotate-6 transition-transform">
+                            <span class="material-symbols-rounded text-3xl">view_in_ar</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Deep Learning</h3>
+                        <p class="text-sm opacity-70 mb-4 leading-relaxed">Neural Networks for computer vision using TensorFlow and PyTorch.</p>
+                        <ul class="text-sm space-y-1 font-mono text-gray-500 dark:text-gray-400">
+                            <li>• CNNs</li>
+                            <li>• Transfer Learning</li>
+                            <li>• Keras</li>
+                        </ul>
+                    </div>
+
+                    <!-- Skill 3 -->
+                    <div class="glass p-8 rounded-3xl hover:border-purple-500/50 transition-all duration-300 group hover:-translate-y-2 reveal-up delay-200">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white mb-6 shadow-lg shadow-purple-500/30 group-hover:rotate-6 transition-transform">
+                            <span class="material-symbols-rounded text-3xl">database</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Data Engineering</h3>
+                        <p class="text-sm opacity-70 mb-4 leading-relaxed">Preprocessing, cleaning, and managing data pipelines.</p>
+                        <ul class="text-sm space-y-1 font-mono text-gray-500 dark:text-gray-400">
+                            <li>• Pandas/NumPy</li>
+                            <li>• SQL</li>
+                            <li>• ETL</li>
+                        </ul>
+                    </div>
+
+                    <!-- Skill 4 -->
+                    <div class="glass p-8 rounded-3xl hover:border-amber-500/50 transition-all duration-300 group hover:-translate-y-2 reveal-up delay-300">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-white mb-6 shadow-lg shadow-amber-500/30 group-hover:rotate-6 transition-transform">
+                            <span class="material-symbols-rounded text-3xl">deployed_code</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">MLOps & Tools</h3>
+                        <p class="text-sm opacity-70 mb-4 leading-relaxed">Deployment and version control to bring models to life.</p>
+                        <ul class="text-sm space-y-1 font-mono text-gray-500 dark:text-gray-400">
+                            <li>• Git/GitHub</li>
+                            <li>• Docker</li>
+                            <li>• AWS Basics</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Projects Section -->
+        <section id="projects" class="py-16 md:py-24 relative">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Centered Header for Consistency -->
+                <div class="text-center mb-16 reveal-up">
+                    <span class="text-brand-500 font-bold uppercase tracking-widest text-sm">Portfolio</span>
+                    <h2 class="text-4xl font-extrabold mt-2">Selected Works</h2>
+                </div>
+
+                <div class="grid gap-12">
+                    <!-- Project 1 -->
+                    <div class="glass p-2 rounded-3xl hover:bg-white/50 dark:hover:bg-slate-800/50 transition duration-500 reveal-up">
+                        <div class="grid md:grid-cols-2 gap-8 p-6">
+                            <div class="relative group overflow-hidden rounded-2xl">
+                                <div class="absolute inset-0 bg-brand-900/20 group-hover:bg-transparent transition z-10"></div>
+                                <img src="https://github.com/roshinit-a/roshinit-a.github.io/blob/main/MNIST_dataset_example.png?raw=true" 
+                                     alt="MNIST Project" 
+                                     class="w-full h-64 md:h-full object-cover transform group-hover:scale-110 transition duration-700">
+                            </div>
+                            <div class="flex flex-col justify-center">
+                                <div class="flex gap-3 mb-4">
+                                    <span class="px-3 py-1 text-xs font-bold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Computer Vision</span>
+                                    <span class="px-3 py-1 text-xs font-bold rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">99.4% Acc</span>
+                                </div>
+                                <h3 class="text-3xl font-bold mb-4">MNIST Digit Classifier</h3>
+                                <p class="text-lg opacity-70 mb-6 leading-relaxed">
+                                    A high-performance Convolutional Neural Network (CNN) built from scratch. Features custom architecture tuning, dropout layers for regularization, and advanced data augmentation.
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-8 font-mono text-xs">
+                                    <span class="px-2 py-1 border border-theme rounded">Python</span>
+                                    <span class="px-2 py-1 border border-theme rounded">TensorFlow</span>
+                                    <span class="px-2 py-1 border border-theme rounded">Keras</span>
+                                </div>
+                                <div class="flex gap-4">
+                                    <a href="https://github.com/roshinit-a/mnist-project-repo" target="_blank" class="flex items-center gap-2 font-bold hover:text-brand-500 transition">
+                                        <span class="material-symbols-rounded">code</span> Code
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Project 2 -->
+                    <div class="glass p-2 rounded-3xl hover:bg-white/50 dark:hover:bg-slate-800/50 transition duration-500 reveal-up">
+                        <div class="grid md:grid-cols-2 gap-8 p-6">
+                            <div class="relative group overflow-hidden rounded-2xl md:order-2">
+                                <div class="absolute inset-0 bg-brand-900/20 group-hover:bg-transparent transition z-10"></div>
+                                <img src="https://github.com/roshinit-a/roshinit-a.github.io/blob/main/california%20image.png?raw=true" 
+                                     alt="House Price Project" 
+                                     class="w-full h-64 md:h-full object-cover transform group-hover:scale-110 transition duration-700">
+                            </div>
+                            <div class="flex flex-col justify-center md:order-1">
+                                <div class="flex gap-3 mb-4">
+                                    <span class="px-3 py-1 text-xs font-bold rounded-full bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">Regression</span>
+                                    <span class="px-3 py-1 text-xs font-bold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300">XGBoost</span>
+                                </div>
+                                <h3 class="text-3xl font-bold mb-4">California Housing Prices</h3>
+                                <p class="text-lg opacity-70 mb-6 leading-relaxed">
+                                    Predicting real estate values using advanced regression techniques. Implements a complete ML pipeline: data cleaning, feature engineering, model selection, and hyperparameter tuning.
+                                </p>
+                                <div class="flex flex-wrap gap-2 mb-8 font-mono text-xs">
+                                    <span class="px-2 py-1 border border-theme rounded">Scikit-learn</span>
+                                    <span class="px-2 py-1 border border-theme rounded">Pandas</span>
+                                    <span class="px-2 py-1 border border-theme rounded">Matplotlib</span>
+                                </div>
+                                <div class="flex gap-4">
+                                    <a href="https://github.com/roshinit-a/house-price-prediction-repo" target="_blank" class="flex items-center gap-2 font-bold hover:text-brand-500 transition">
+                                        <span class="material-symbols-rounded">code</span> Code
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bottom Button -->
+                <div class="mt-12 text-center">
+                    <a href="https://github.com/roshinit-a" target="_blank" class="inline-flex items-center justify-center px-8 py-4 text-base font-bold rounded-xl border border-theme hover:bg-brand-500 hover:text-white hover:border-brand-500 transition-all transform hover:-translate-y-1">
+                        View all on GitHub <span class="material-symbols-rounded ml-2">arrow_forward</span>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. Contact Section -->
+        <section id="contact" class="py-16 md:py-24 relative overflow-hidden">
+            <!-- Removed Decorative BG div -->
+            
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 reveal-up">
+                <div class="glass p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-theme relative overflow-hidden">
+                    
+                    <div class="relative z-10 text-center mb-10">
+                        <span class="material-symbols-rounded text-6xl text-brand-500 mb-4">mail_outline</span>
+                        <h2 class="text-4xl font-extrabold mb-4">Let's Build Something Intelligent</h2>
+                        <p class="text-lg opacity-70">Have a project in mind or just want to chat about AI?</p>
+                    </div>
+
+                    <!-- UPDATE: Added id="contact-form" for JavaScript handling -->
+                    <form id="contact-form" action="https://formspree.io/f/mvgerzbz" method="POST" class="space-y-6 max-w-xl mx-auto">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-bold mb-2 ml-1">Name</label>
+                                <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition" placeholder="Roshan Raj">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-bold mb-2 ml-1">Email</label>
+                                <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition" placeholder="roshanraj6476@gmail.com">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold mb-2 ml-1">Message</label>
+                            <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-xl bg-white/50 dark:bg-slate-900/50 border border-gray-200 dark:border-gray-700 focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 outline-none transition" placeholder="Tell me about your project..."></textarea>
+                        </div>
+                        <button type="submit" class="w-full py-4 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl shadow-lg shadow-brand-500/30 transition-all transform hover:-translate-y-1">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-12 border-t border-theme glass mt-12">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="text-center md:text-left">
+                <h3 class="text-xl font-bold">Roshan<span class="text-brand-500"> Raj</span></h3>
+                <p class="text-sm opacity-50 mt-1">Machine Learning Engineer</p>
+            </div>
+            
+            <div class="flex gap-6">
+                <!-- GitHub -->
+                <a href="https://github.com/roshinit-a" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-brand-500 hover:text-white transition-all" title="GitHub">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                </a>
+                
+                <!-- LeetCode -->
+                <a href="https://leetcode.com/u/NovaCipher11/" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-brand-500 hover:text-white transition-all" title="LeetCode">
+                    <span class="material-symbols-rounded text-xl">code</span>
+                </a>
+
+                <!-- LinkedIn -->
+                <a href="https://www.linkedin.com/in/roshan-raj-prasad-2171432a3/" target="_blank" class="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center hover:bg-brand-500 hover:text-white transition-all" title="LinkedIn">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.5-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                </a>
+            </div>
+
+            <p class="text-sm opacity-50 text-center md:text-right">
+                &copy; 2025 Roshan R. Prasad.<br>
+                Crafted with <span class="text-red-500">♥</span> and Code.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="fixed bottom-8 right-8 p-3 bg-brand-500 text-white rounded-full shadow-lg translate-y-20 opacity-0 transition-all duration-300 z-50 hover:bg-brand-600">
+        <span class="material-symbols-rounded">arrow_upward</span>
+    </button>
+
+    <!-- Scripts -->
+    <script>
+        // 1. Theme Logic
+        const htmlElement = document.documentElement;
+        const themeToggle = document.getElementById('theme-toggle');
+        const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+
+        // --- GLOBAL VARIABLES ---
+        let scene, camera, renderer;
+        let particles; // The Galaxy System
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        function setTheme(theme) {
+            htmlElement.classList.toggle('dark', theme === 'dark');
+            document.getElementById('sun-icon').classList.toggle('hidden', theme === 'dark');
+            document.getElementById('moon-icon').classList.toggle('hidden', theme !== 'dark');
+            localStorage.setItem('theme', theme);
+            
+            // Update 3D Colors
+            update3DTheme(theme);
+        }
+
+        // Init Theme
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        setTheme(savedTheme);
+
+        const toggleTheme = () => setTheme(htmlElement.classList.contains('dark') ? 'light' : 'dark');
+        themeToggle.addEventListener('click', toggleTheme);
+        if(mobileThemeToggle) mobileThemeToggle.addEventListener('click', toggleTheme);
+
+        // 2. Three.js Background Logic - OPTIMIZATION SPIRAL
+        function init3DBackground() {
+            const container = document.getElementById('canvas-container');
+            
+            // Scene & Camera
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.z = 400;
+            camera.position.y = 200;
+            camera.rotation.x = -0.5;
+
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            // --- GALAXY GENERATION ---
+            const parameters = {
+                count: 15000, // More particles for a denser galaxy
+                size: 2, // Slight increase for visibility
+                radius: 400,
+                branches: 5,
+                spin: 1.5,
+                randomness: 0.3,
+                randomnessPower: 3,
+            };
+
+            const geometry = new THREE.BufferGeometry();
+            const positions = new Float32Array(parameters.count * 3);
+            const colors = new Float32Array(parameters.count * 3);
+            
+            // Store mix ratios to efficiently recolor on theme switch
+            const mixRatios = new Float32Array(parameters.count);
+            
+            // Initial generation
+            for (let i = 0; i < parameters.count; i++) {
+                const i3 = i * 3;
+
+                // Position Logic
+                const radius = Math.random() * parameters.radius;
+                const spinAngle = radius * parameters.spin * 0.002;
+                const branchAngle = (i % parameters.branches) / parameters.branches * Math.PI * 2;
+
+                // Randomness for organic look
+                const randomX = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+                const randomY = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+                const randomZ = Math.pow(Math.random(), parameters.randomnessPower) * (Math.random() < 0.5 ? 1 : -1) * parameters.randomness * radius;
+
+                positions[i3] = Math.cos(branchAngle + spinAngle) * radius + randomX;
+                positions[i3 + 1] = randomY; // Flat galaxy with vertical jitter
+                positions[i3 + 2] = Math.sin(branchAngle + spinAngle) * radius + randomZ;
+                
+                // Store mix ratio (0 to 1 based on radius)
+                mixRatios[i] = radius / parameters.radius;
+            }
+
+            geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            // Attach custom data for reuse
+            geometry.userData = { mixRatios: mixRatios };
+
+            // Helper to create a soft dot texture
+            function createCircleTexture() {
+                const size = 64;
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const context = canvas.getContext('2d');
+                const centerX = size / 2;
+                const centerY = size / 2;
+                const radius = size / 2;
+
+                context.beginPath();
+                context.arc(centerX, centerY, radius, 0, 2 * Math.PI, false);
+                context.fillStyle = '#ffffff';
+                context.fill();
+
+                const texture = new THREE.Texture(canvas);
+                texture.needsUpdate = true;
+                return texture;
+            }
+
+            const material = new THREE.PointsMaterial({
+                size: parameters.size,
+                sizeAttenuation: true,
+                depthWrite: false,
+                blending: THREE.AdditiveBlending, // Initial default, updated by theme
+                vertexColors: true,
+                transparent: true,
+                map: createCircleTexture(),
+                opacity: 0.8
+            });
+
+            particles = new THREE.Points(geometry, material);
+            scene.add(particles);
+
+            // Apply correct initial theme colors/blending
+            update3DTheme(savedTheme);
+
+            // Mouse Listeners
+            document.addEventListener('mousemove', onDocumentMouseMove);
+            window.addEventListener('resize', onWindowResize);
+
+            animate3D();
+        }
+
+        function update3DTheme(theme) {
+            if (!particles) return;
+            
+            const colors = particles.geometry.attributes.color;
+            const mixRatios = particles.geometry.userData.mixRatios;
+            const tempColor = new THREE.Color();
+            
+            // --- THEME CONFIGURATION ---
+            // Light Mode: Dark Indigo to Black (High Contrast on White)
+            // Dark Mode: Glowing Orange to Blue (High Contrast on Dark)
+            
+            const colorInside = new THREE.Color(theme === 'dark' ? '#ff6030' : '#4f46e5');
+            const colorOutside = new THREE.Color(theme === 'dark' ? '#1b3984' : '#1e293b');
+
+            // --- BLENDING MODE ---
+            // Additive blending looks amazing on dark backgrounds (glowing)
+            // Normal blending is required for dark particles on white backgrounds
+            if (theme === 'dark') {
+                particles.material.blending = THREE.AdditiveBlending;
+                particles.material.opacity = 0.8;
+            } else {
+                particles.material.blending = THREE.NormalBlending;
+                particles.material.opacity = 0.8;
+            }
+            
+            // Recalculate all particle colors
+            for (let i = 0; i < colors.count; i++) {
+                const mix = mixRatios[i];
+                tempColor.copy(colorInside).lerp(colorOutside, mix);
+                colors.setXYZ(i, tempColor.r, tempColor.g, tempColor.b);
+            }
+            
+            colors.needsUpdate = true;
+            particles.material.needsUpdate = true;
+        }
+
+        function onDocumentMouseMove(event) {
+            mouseX = (event.clientX - window.innerWidth / 2) * 0.5;
+            mouseY = (event.clientY - window.innerHeight / 2) * 0.5;
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function animate3D() {
+            requestAnimationFrame(animate3D);
+
+            // Rotate entire galaxy
+            if(particles) {
+                particles.rotation.y += 0.0005; // Slow spin
+            }
+
+            // Parallax
+            camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+            camera.position.y += (-mouseY * 0.5 + 200 - camera.position.y) * 0.05; // +200 to keep high angle
+            camera.lookAt(scene.position);
+
+            renderer.render(scene, camera);
+        }
+
+        // Start 3D
+        init3DBackground();
+
+
+        // 3. Typing Effect
+        const words = ["Machine Learning Engineer", "Data Scientist", "Deep Learning Enthusiast", "Python Developer"];
+        let j = 0; // Renamed to avoid conflict
+
+        function typeWriter() {
+            const heading = document.getElementById("typewriter");
+            const word = words[j];
+            let n = 0;
+            
+            // Typing
+            const typeInterval = setInterval(() => {
+                heading.innerHTML = word.substring(0, n + 1);
+                n++;
+                if (n === word.length) {
+                    clearInterval(typeInterval);
+                    // Wait before erasing
+                    setTimeout(() => {
+                        const eraseInterval = setInterval(() => {
+                            heading.innerHTML = word.substring(0, n - 1);
+                            n--;
+                            if (n === 0) {
+                                clearInterval(eraseInterval);
+                                j = (j + 1) % words.length;
+                                typeWriter();
+                            }
+                        }, 50);
+                    }, 2000);
+                }
+            }, 100);
+        }
+        typeWriter();
+
+
+        // 4. Scroll Spy & Progress Bar
+        const sections = document.querySelectorAll('section');
+        const navLinks = document.querySelectorAll('.nav-link');
+        const backToTopBtn = document.getElementById('backToTop');
+        const progressBar = document.getElementById('scroll-progress');
+
+        window.onscroll = () => {
+            // Progress Bar
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            progressBar.style.width = scrolled + "%";
+
+            // Back to Top Visibility
+            if (winScroll > 300) {
+                backToTopBtn.classList.remove('translate-y-20', 'opacity-0');
+            } else {
+                backToTopBtn.classList.add('translate-y-20', 'opacity-0');
+            }
+
+            // Scroll Spy
+            let current = "";
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Reveal Animation
+            const reveals = document.querySelectorAll(".reveal-up");
+            reveals.forEach(reveal => {
+                const windowHeight = window.innerHeight;
+                const elementTop = reveal.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 100) {
+                    reveal.classList.add("active");
+                }
+            });
+        };
+
+
+        // 5. Mobile Menu Toggle
+        const btn = document.getElementById('mobile-menu-btn');
+        const menu = document.getElementById('mobile-menu');
+        btn.addEventListener('click', () => menu.classList.toggle('hidden'));
+        // Close menu on link click
+        document.querySelectorAll('#mobile-menu a').forEach(link => {
+            link.addEventListener('click', () => menu.classList.add('hidden'));
+        });
+
+
+        // 6. Contact Form Handling (AJAX)
+        const contactForm = document.getElementById("contact-form");
+        
+        async function handleSubmit(event) {
+            event.preventDefault();
+            const data = new FormData(event.target);
+            
+            // Show loading state
+            const btn = contactForm.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = 'Sending...';
+            btn.disabled = true;
+
+            fetch(event.target.action, {
+                method: contactForm.method,
+                body: data,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            }).then(response => {
+                if (response.ok) {
+                    // Success: Replace form with Thank You message
+                    contactForm.innerHTML = `
+                        <div class="text-center py-12 reveal-up active animate-fade-in-up">
+                            <div class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-brand-100 dark:bg-brand-900/30 text-brand-500 mb-6">
+                                <span class="material-symbols-rounded text-5xl">check_circle</span>
+                            </div>
+                            <h3 class="text-3xl font-bold mb-4">Message Sent!</h3>
+                            <p class="text-lg opacity-70 mb-8">
+                                Thank you for reaching out. I'll get back to you shortly.
+                            </p>
+                            <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-brand-500 font-bold hover:underline">
+                                Back to Top
+                            </button>
+                        </div>
+                    `;
+                } else {
+                    response.json().then(data => {
+                        if (Object.hasOwn(data, 'errors')) {
+                            alert(data["errors"].map(error => error["message"]).join(", "));
+                        } else {
+                            alert("Oops! There was a problem submitting your form");
+                        }
+                    });
+                    // Reset button
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            }).catch(error => {
+                alert("Oops! There was a problem submitting your form");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
+        }
+        
+        if(contactForm) {
+            contactForm.addEventListener("submit", handleSubmit);
+        }
+    </script>
+</body>
+</html>
